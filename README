@@ -1,0 +1,126 @@
+# FiveM Backdoor Scanner
+
+Outil d'analyse de code pour détecter les backdoors, malwares et comportements suspects dans les ressources FiveM (scripts Lua et JavaScript).
+
+---
+
+## Fonctionnalités
+
+- **Scan local par signatures** — détection instantanée de patterns malveillants connus, fonctionne hors ligne
+- **Analyse IA (Claude)** — examen contextuel et approfondi du code pour détecter les backdoors sophistiqués
+- **Support multi-formats** — fichiers `.lua`, `.js`, `.json`, `.txt`, archives `.zip` et dossiers entiers
+- **Interface moderne** — design sombre, résultats filtrables, cards repliables par sévérité
+
+---
+
+## Installation
+
+Aucune installation requise. Il s'agit d'un fichier HTML autonome.
+
+1. Télécharge `fivem-backdoor-scanner.html`
+2. Ouvre-le dans ton navigateur (Chrome, Firefox, Edge...)
+3. C'est prêt
+
+> **Dépendance externe** : JSZip est chargé depuis `cdnjs.cloudflare.com` pour l'extraction des archives ZIP. Une connexion internet est nécessaire pour cette fonctionnalité et pour l'analyse IA.
+
+---
+
+## Utilisation
+
+### Onglet "Fichiers & archives"
+
+Glisse-dépose ou sélectionne :
+- Un ou plusieurs fichiers `.lua`, `.js`, `.json`
+- Une ou plusieurs archives `.zip` (le scanner extrait et analyse automatiquement tous les fichiers scannables à l'intérieur)
+
+### Onglet "Dossier"
+
+Clique sur la zone pour sélectionner un dossier complet via le navigateur de fichiers. Tous les fichiers `.lua`, `.js`, `.json` seront détectés et analysés récursivement, y compris dans les sous-dossiers.
+
+### Onglet "Code"
+
+Colle directement du code Lua ou JavaScript dans la zone de texte pour une analyse rapide sans passer par un fichier.
+
+### Lancer l'analyse
+
+Clique sur **Lancer l'analyse IA**. L'outil effectue deux passes :
+
+1. **Scan local** — comparaison instantanée contre une base de signatures de patterns malveillants
+2. **Analyse IA** — envoi du code à Claude (API Anthropic) pour une analyse contextuelle approfondie
+
+---
+
+## Patterns détectés
+
+### Critiques (danger immédiat)
+
+| Pattern | Description |
+|---|---|
+| `load()` avec string encodé | Exécution de code chargé dynamiquement — technique classique de backdoor |
+| `os.execute`, `io.popen` | Appel direct au système d'exploitation |
+| Webhook Discord/Slack | Exfiltration de données vers un serveur externe |
+| Import depuis URL distante | Chargement de code depuis un serveur au runtime |
+| `eval()` | Évaluation de code dynamique |
+| Séquences hex obfusquées | Strings encodés en hex pour dissimuler un payload |
+| Métatable + `load()` | Combinaison avancée pour masquer l'exécution de code |
+| Commande RCON suspecte | Exécution de commandes RCON potentiellement malveillantes |
+
+### Avertissements (à vérifier)
+
+| Pattern | Description |
+|---|---|
+| `PerformHttpRequest` | Communication réseau — vérifier les URLs cibles |
+| Collecte d'identifiants joueurs | `GetPlayerIdentifiers`, `GetPlayerName` — potentielle fuite |
+| Encodage Base64 | Peut masquer du code ou des données sensibles |
+| Event admin suspect | `TriggerEvent` avec `admin`, `ban`, `kick`, `grant` |
+| Adresse IP en dur | Connexion vers une IP fixe — possible C2 (Command & Control) |
+
+### Informatif
+
+| Pattern | Description |
+|---|---|
+| Chaîne Base64 longue | Données encodées — peut cacher un payload |
+
+---
+
+## Formats supportés
+
+| Format | Support |
+|---|---|
+| `.lua` | Complet |
+| `.js` | Complet |
+| `.json` | Complet |
+| `.txt`, `.cfg`, `fxmanifest` | Complet |
+| `.zip` | Extraction automatique et scan récursif |
+| `.rar`, `.7z` | Non supporté (limitation navigateur) — extraire manuellement puis utiliser l'onglet Dossier |
+
+---
+
+## Limitations
+
+- **RAR / 7z** : ces formats ne peuvent pas être décompressés dans un navigateur. Extrais-les d'abord avec WinRAR ou 7-Zip, puis utilise l'onglet "Dossier".
+- **Taille maximale** : les fichiers de plus de 500 KB sont ignorés lors du scan local pour des raisons de performance.
+- **Analyse IA** : limitée aux 8 premiers fichiers et aux 6000 premiers caractères par fichier.
+- **Obfuscation avancée** : les codes obfusqués par des outils comme LuaObfuscator peuvent partiellement déjouer la détection par signatures — l'analyse IA compense en partie cette limite.
+
+> Cet outil est une aide à l'analyse. Il ne remplace pas un audit de sécurité humain approfondi pour les ressources critiques (antitriche, système économique, gestion des rôles).
+
+---
+
+## Confidentialité
+
+Le code analysé est envoyé à l'API Anthropic (Claude) uniquement lors du clic sur "Lancer l'analyse IA". Aucune donnée n'est stockée localement ni envoyée à un tiers en dehors de cette étape. Pour une analyse purement locale sans envoi réseau, il suffit de ne pas utiliser l'outil depuis un contexte autorisant les appels API — le scan par signatures fonctionne intégralement hors ligne.
+
+---
+
+## Stack technique
+
+- HTML / CSS / JavaScript vanilla — aucune dépendance framework
+- [JSZip 3.10.1](https://stuk.github.io/jszip/) — extraction des archives ZIP
+- [Claude API](https://www.anthropic.com) (claude-sonnet) — analyse IA
+
+---
+
+## Licence
+
+Outil fourni tel quel, à des fins d'audit de sécurité. Utilisation personnelle et professionnelle libre.
